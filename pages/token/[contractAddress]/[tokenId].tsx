@@ -6,38 +6,75 @@ import {
   useValidDirectListings,
   useValidEnglishAuctions,
   Web3Button,
-} from "@thirdweb-dev/react";
-import React, { useState } from "react";
-import Container from "../../../components/Container/Container";
-import { GetStaticProps, GetStaticPaths } from "next";
-import { NFT, ThirdwebSDK } from "@thirdweb-dev/sdk";
+} from '@thirdweb-dev/react';
+import React, { useState } from 'react';
+import Container from '../../../components/Container/Container';
+import { GetStaticProps, GetStaticPaths } from 'next';
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import {
   ETHERSCAN_URL,
   MARKETPLACE_ADDRESS,
   NETWORK,
   NFT_COLLECTION_ADDRESS,
-} from "../../../const/contractAddresses";
-import styles from "../../../styles/Token.module.css";
-import Link from "next/link";
-import randomColor from "../../../util/randomColor";
-import Skeleton from "../../../components/Skeleton/Skeleton";
-import toast, { Toaster } from "react-hot-toast";
-import toastStyle from "../../../util/toastConfig";
+} from '../../../const/contractAddresses';
+import styles from '../../../styles/Token.module.css';
+import Link from 'next/link';
+import randomColor from '../../../util/randomColor';
+import Skeleton from '../../../components/Skeleton/Skeleton';
+import toast, { Toaster } from 'react-hot-toast';
+import toastStyle from '../../../util/toastConfig';
+import QueryResults from '../../../components/QueryResults';
+import Spinner from '../../../components/Spinner';
+
+type NFTMetadataProperties = {
+  sql?: string;
+  // include other properties as needed
+};
+
+type NFTMetadata = {
+  uri: string; // Add this line
+  properties?: NFTMetadataProperties;
+  id?: string;
+  description?: string;
+  name?: string;
+  // include other properties as needed
+};
+
+type NFT = {
+  metadata?: NFTMetadata;
+  owner?: string;
+  // include other properties as needed
+};
 
 type Props = {
   nft: NFT;
   contractMetadata: any;
 };
 
+type ResultType = { [key: string]: string | number }; // Adjust this type based on your actual data structure
+
 const [randomColor1, randomColor2] = [randomColor(), randomColor()];
 
 export default function TokenPage({ nft, contractMetadata }: Props) {
+  const [results, setResults] = useState<ResultType[] | null>(null);
+  const [isLoadingResults, setIsLoadingResults] = useState(false); // Add this line
+  // const [sqlQuery, setSqlQuery] = useState('');
+
+  const runQuery = async () => {
+    const res = await fetch('../../api/chainbase', {
+      method: 'POST',
+      body: JSON.stringify(nft?.metadata?.properties?.sql),
+    });
+    const response = await res.json();
+    setResults(response.data.data.result);
+  };
+
   const [bidValue, setBidValue] = useState<string>();
 
   // Connect to marketplace smart contract
   const { contract: marketplace, isLoading: loadingContract } = useContract(
     MARKETPLACE_ADDRESS,
-    "marketplace-v3"
+    'marketplace-v3'
   );
 
   // Connect to NFT Collection smart contract
@@ -46,24 +83,24 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   const { data: directListing, isLoading: loadingDirect } =
     useValidDirectListings(marketplace, {
       tokenContract: NFT_COLLECTION_ADDRESS,
-      tokenId: nft.metadata.id,
+      tokenId: nft?.metadata?.id,
     });
 
   // 2. Load if the NFT is for auction
   const { data: auctionListing, isLoading: loadingAuction } =
     useValidEnglishAuctions(marketplace, {
       tokenContract: NFT_COLLECTION_ADDRESS,
-      tokenId: nft.metadata.id,
+      tokenId: nft?.metadata?.id,
     });
 
   // Load historical transfer events: TODO - more event types like sale
   const { data: transferEvents, isLoading: loadingTransferEvents } =
-    useContractEvents(nftCollection, "Transfer", {
+    useContractEvents(nftCollection, 'Transfer', {
       queryFilter: {
         filters: {
-          tokenId: nft.metadata.id,
+          tokenId: nft?.metadata?.id,
         },
-        order: "desc",
+        order: 'desc',
       },
     });
 
@@ -71,9 +108,9 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
     let txResult;
     if (!bidValue) {
       toast(`Please enter a bid value`, {
-        icon: "❌",
+        icon: '❌',
         style: toastStyle,
-        position: "bottom-center",
+        position: 'bottom-center',
       });
       return;
     }
@@ -86,11 +123,11 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
     } else if (directListing?.[0]) {
       txResult = await marketplace?.offers.makeOffer({
         assetContractAddress: NFT_COLLECTION_ADDRESS,
-        tokenId: nft.metadata.id,
-        totalPrice: bidValue,
+        tokenId: nft?.metadata?.id ?? '',
+        totalPrice: bidValue || '0',
       });
     } else {
-      throw new Error("No valid listing found for this NFT");
+      throw new Error('No valid listing found for this NFT');
     }
 
     return txResult;
@@ -109,7 +146,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
         1
       );
     } else {
-      throw new Error("No valid listing found for this NFT");
+      throw new Error('No valid listing found for this NFT');
     }
     return txResult;
   }
@@ -121,28 +158,17 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
         <div className={styles.container}>
           <div className={styles.metadataContainer}>
             <ThirdwebNftMedia
-              metadata={nft.metadata}
+              metadata={{
+                ...nft?.metadata,
+                id: nft?.metadata?.id ?? 'default_id',
+                uri: nft?.metadata?.uri ?? 'default_uri',
+              }}
               className={styles.image}
             />
 
             <div className={styles.descriptionContainer}>
               <h3 className={styles.descriptionTitle}>Description</h3>
-              <p className={styles.description}>{nft.metadata.description}</p>
-
-              <h3 className={styles.descriptionTitle}>Traits</h3>
-
-              <div className={styles.traitsContainer}>
-                {Object.entries(nft?.metadata?.attributes || {}).map(
-                  ([key, value]) => (
-                    <div className={styles.traitContainer} key={key}>
-                      <p className={styles.traitName}>{key}</p>
-                      <p className={styles.traitValue}>
-                        {value?.toString() || ""}
-                      </p>
-                    </div>
-                  )
-                )}
-              </div>
+              <p className={styles.description}>{nft?.metadata?.description}</p>
 
               <h3 className={styles.descriptionTitle}>History</h3>
 
@@ -158,8 +184,8 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                         {
                           // if last event in array, then it's a mint
                           index === transferEvents.length - 1
-                            ? "Mint"
-                            : "Transfer"
+                            ? 'Mint'
+                            : 'Transfer'
                         }
                       </p>
                     </div>
@@ -192,6 +218,22 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                   </div>
                 ))}
               </div>
+
+              <h3 className={styles.descriptionTitle}>Preview Data</h3>
+              <p className={styles.description}>
+                {nft?.metadata?.properties?.sql}
+              </p>
+              <button
+                onClick={runQuery}
+                className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Run Query
+              </button>
+              {isLoadingResults ? (
+                <Spinner />
+              ) : (
+                results && <QueryResults results={results} />
+              )}
             </div>
           </div>
 
@@ -205,11 +247,13 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                 <p className={styles.collectionName}>{contractMetadata.name}</p>
               </div>
             )}
-            <h1 className={styles.title}>{nft.metadata.name}</h1>
-            <p className={styles.collectionName}>Token ID #{nft.metadata.id}</p>
+            <h1 className={styles.title}>{nft?.metadata?.name}</h1>
+            <p className={styles.collectionName}>
+              Token ID #{nft?.metadata?.id}
+            </p>
 
             <Link
-              href={`/profile/${nft.owner}`}
+              href={`/profile/${nft?.owner}`}
               className={styles.nftOwnerContainer}
             >
               {/* Random linear gradient circle shape */}
@@ -222,7 +266,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
               <div className={styles.nftOwnerInfo}>
                 <p className={styles.label}>Current Owner</p>
                 <p className={styles.nftOwnerAddress}>
-                  {nft.owner.slice(0, 8)}...{nft.owner.slice(-4)}
+                  {nft?.owner?.slice(0, 8)}...{nft?.owner?.slice(-4)}
                 </p>
               </div>
             </Link>
@@ -239,15 +283,15 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                       {directListing && directListing[0] ? (
                         <>
                           {directListing[0]?.currencyValuePerToken.displayValue}
-                          {" " + directListing[0]?.currencyValuePerToken.symbol}
+                          {' ' + directListing[0]?.currencyValuePerToken.symbol}
                         </>
                       ) : auctionListing && auctionListing[0] ? (
                         <>
                           {auctionListing[0]?.buyoutCurrencyValue.displayValue}
-                          {" " + auctionListing[0]?.buyoutCurrencyValue.symbol}
+                          {' ' + auctionListing[0]?.buyoutCurrencyValue.symbol}
                         </>
                       ) : (
-                        "Not for sale"
+                        'Not for sale'
                       )}
                     </>
                   )}
@@ -269,7 +313,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                               auctionListing[0]?.minimumBidCurrencyValue
                                 .displayValue
                             }
-                            {" " +
+                            {' ' +
                               auctionListing[0]?.minimumBidCurrencyValue.symbol}
                           </div>
                         </>
@@ -290,16 +334,16 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                   className={styles.btn}
                   onSuccess={() => {
                     toast(`Purchase success!`, {
-                      icon: "✅",
+                      icon: '✅',
                       style: toastStyle,
-                      position: "bottom-center",
+                      position: 'bottom-center',
                     });
                   }}
                   onError={(e) => {
                     toast(`Purchase failed! Reason: ${e.message}`, {
-                      icon: "❌",
+                      icon: '❌',
                       style: toastStyle,
-                      position: "bottom-center",
+                      position: 'bottom-center',
                     });
                   }}
                 >
@@ -329,17 +373,17 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                   className={styles.btn}
                   onSuccess={() => {
                     toast(`Bid success!`, {
-                      icon: "✅",
+                      icon: '✅',
                       style: toastStyle,
-                      position: "bottom-center",
+                      position: 'bottom-center',
                     });
                   }}
                   onError={(e) => {
                     console.log(e);
                     toast(`Bid failed! Reason: ${e.message}`, {
-                      icon: "❌",
+                      icon: '❌',
                       style: toastStyle,
-                      position: "bottom-center",
+                      position: 'bottom-center',
                     });
                   }}
                 >
@@ -400,6 +444,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: "blocking", // can also be true or 'blocking'
+    fallback: 'blocking', // can also be true or 'blocking'
   };
 };

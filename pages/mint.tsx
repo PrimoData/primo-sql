@@ -13,16 +13,18 @@ import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/theme-monokai';
 import QueryResults from '../components/QueryResults';
 import Spinner from '../components/Spinner';
-import axios from 'axios';
+
+type ResultType = { [key: string]: string | number }; // Adjust this type based on your actual data structure
 
 export default function Mint() {
   // Load all of the NFTs from the NFT Collection
   const { contract } = useContract(NFT_COLLECTION_ADDRESS);
   const address = useAddress() ?? '';
   const { mutateAsync: mintNft, isLoading, error } = useMintNFT(contract);
-  const [results, setResults] = useState<{ data: any } | null>(null);
+  const [results, setResults] = useState<ResultType[] | null>(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false); // Add this line
   const [sqlQuery, setSqlQuery] = useState('');
+  const [title, setTitle] = useState('');
 
   const runQuery = async () => {
     const res = await fetch('/api/chainbase', {
@@ -42,6 +44,8 @@ export default function Mint() {
         id="title"
         type="text"
         placeholder="Count of daily Ethereum transactions last 7 days"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
       <h2>SQL</h2>
       <AceEditor
@@ -68,18 +72,18 @@ export default function Mint() {
         }}
         className={'green-button'}
         contractAddress={NFT_COLLECTION_ADDRESS}
-        // {...(query ? null : { isDisabled: true })}
+        {...(sqlQuery ? null : { isDisabled: true })}
         onSuccess={(result) => alert('Created Query NFT!')}
         action={() =>
           mintNft({
             metadata: {
-              name: 'Query NFT',
-              description: 'eth blocks',
+              name: title,
+              description: 'Chainbase SQL Query',
+              image: 'https://chainbase.com/assets/brand/Logo_Icon_Black.svg',
               properties: {
                 createdByAddress: address,
-                createdByArb: 'test',
                 queryType: 'test',
-                sql: 'select * from ethereum.blocks',
+                sql: sqlQuery,
               },
             },
             to: address,
@@ -91,26 +95,7 @@ export default function Mint() {
       {isLoadingResults ? (
         <Spinner />
       ) : (
-        results && (
-          <table>
-            <thead>
-              <tr>
-                {Object.keys(results[0]).map((key, index) => (
-                  <th key={index}>{key}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {Object.values(row).map((value, valueIndex) => (
-                    <td key={valueIndex}>{value}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )
+        results && <QueryResults results={results} />
       )}
     </Container>
   );
