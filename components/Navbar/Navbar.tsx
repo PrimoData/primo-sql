@@ -1,7 +1,7 @@
-import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
-import Image from "next/image";
-import Link from "next/link";
-import styles from "./Navbar.module.css";
+import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from './Navbar.module.css';
 
 /**
  * Navigation bar that shows up on all pages.
@@ -29,6 +29,9 @@ export function Navbar() {
             </Link>
             <Link href="/sell" className={styles.link}>
               Sell
+            </Link>
+            <Link href="/mint" className={styles.link}>
+              Mint
             </Link>
           </div>
         </div>
