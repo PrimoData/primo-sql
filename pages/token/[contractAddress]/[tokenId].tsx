@@ -220,9 +220,6 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
               </div>
 
               <h3 className={styles.descriptionTitle}>Preview Data</h3>
-              <p className={styles.description}>
-                {nft?.metadata?.properties?.sql}
-              </p>
               <button
                 onClick={runQuery}
                 className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600"

@@ -5,5 +5,8 @@
       "callees": ["cn", "cva"],
       "config": "tailwind.config.cjs"
     }
+  },
+  "rules": {
+    "tailwindcss/classnames-order": "off"
   }
 }
