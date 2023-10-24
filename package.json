@@ -14,16 +14,19 @@
     "@thirdweb-dev/chains": "^0",
     "@thirdweb-dev/react": "^4",
     "@thirdweb-dev/sdk": "^4",
+    "autoprefixer": "^10.4.16",
     "ethers": "^5",
     "next": "^13",
     "nextjs-progressbar": "^0.0.16",
     "node-fetch": "^3.3.2",
+    "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "react": "^18.2",
     "react-ace": "^10.1.0",
     "react-dom": "^18.2",
     "react-hook-form": "^7.43.0",
-    "react-hot-toast": "^2.4.0"
+    "react-hot-toast": "^2.4.0",
+    "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^18.11.11",

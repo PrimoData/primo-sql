@@ -1,6 +1,3 @@
-.profileHeader {
-}
-
 .coverImage {
   width: 100%;
   background-color: #272a2d;
@@ -36,17 +33,16 @@
   padding: 16px;
   font-size: 16px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: #191c1f;
   cursor: pointer;
   transition: color 0.1s ease-in-out;
 }
 
 .tab:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: #0294fe;
 }
 
 .activeTab {
-  color: rgba(255, 255, 255, 1);
   border-bottom: 2px solid #0294fe;
   color: #0294fe;
 }

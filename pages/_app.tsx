@@ -21,9 +21,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       />
 
       {/* Render the navigation menu above each component */}
-      <Navbar />
+      <div>
+        <Navbar />
+      </div>
+
       {/* Render the actual component (page) */}
-      <Component {...pageProps} />
+      <div>
+        <Component {...pageProps} />
+      </div>
     </ThirdwebProvider>
   );
 }
