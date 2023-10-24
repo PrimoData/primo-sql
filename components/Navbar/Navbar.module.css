@@ -7,11 +7,10 @@
   top: 0px;
   left: 0px;
   z-index: 3;
-  background-color: white !important;
+  background-color: transparent !important;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
-  border-bottom: 1px solid #191c1f;
 }
 
 .nav {
@@ -44,7 +43,7 @@
 }
 
 .link {
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.2px;
@@ -53,7 +52,7 @@
 }
 
 .link:hover {
-  color: blue;
+  color: rgba(255, 255, 255, 1);
 }
 
 .homeLink:hover {

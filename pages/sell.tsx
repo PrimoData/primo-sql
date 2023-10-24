@@ -3,14 +3,14 @@ import {
   useAddress,
   useContract,
   useOwnedNFTs,
-} from '@thirdweb-dev/react';
-import React, { useState } from 'react';
-import Container from '../components/Container/Container';
-import NFTGrid from '../components/NFT/NFTGrid';
-import { NFT_COLLECTION_ADDRESS } from '../const/contractAddresses';
-import tokenPageStyles from '../styles/Token.module.css';
-import { NFT as NFTType } from '@thirdweb-dev/sdk';
-import SaleInfo from '../components/SaleInfo/SaleInfo';
+} from "@thirdweb-dev/react";
+import React, { useState } from "react";
+import Container from "../components/Container/Container";
+import NFTGrid from "../components/NFT/NFTGrid";
+import { NFT_COLLECTION_ADDRESS } from "../const/contractAddresses";
+import tokenPageStyles from "../styles/Token.module.css";
+import { NFT as NFTType } from "@thirdweb-dev/sdk";
+import SaleInfo from "../components/SaleInfo/SaleInfo";
 
 export default function Sell() {
   // Load all of the NFTs from the NFT Collection
@@ -64,9 +64,7 @@ export default function Sell() {
             <p className={tokenPageStyles.collectionName}>
               Token ID #{selectedNft.metadata.id}
             </p>
-            <p className={tokenPageStyles.collectionName}>
-              {(selectedNft?.metadata?.properties as any)?.['sql']}{' '}
-            </p>
+
             <div className={tokenPageStyles.pricingContainer}>
               <SaleInfo nft={selectedNft} />
             </div>

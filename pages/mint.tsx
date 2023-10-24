@@ -1,13 +1,13 @@
+// import '../styles/globals.css';
+import Container from '../components/Container/Container';
+import { NFT_COLLECTION_ADDRESS } from '../const/contractAddresses';
 import {
   useAddress,
   useContract,
   useMintNFT,
   Web3Button,
 } from '@thirdweb-dev/react';
-
 import React, { useState } from 'react';
-import Container from '../components/Container/Container';
-import { NFT_COLLECTION_ADDRESS } from '../const/contractAddresses';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/theme-monokai';

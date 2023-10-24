@@ -28,7 +28,7 @@
 
 .image {
   border-radius: 16px;
-  width: 50% !important;
+  width: 100% !important;
   height: auto !important;
   background-color: rgba(255, 255, 255, 0.04);
 }
@@ -41,7 +41,7 @@
   background: transparent;
   border: none;
   font-size: 16px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   margin-bottom: 16px;
   margin-left: 2px;
@@ -136,7 +136,7 @@
 }
 
 .label {
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0px;
   margin-bottom: 4px;
 }
@@ -144,7 +144,7 @@
 .nftOwnerAddress {
   font-weight: 600;
   margin: 0px;
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .descriptionContainer {
@@ -188,19 +188,18 @@
   min-width: 128px;
   border-radius: 16px;
   min-height: 32px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .traitValue {
   font-weight: 600;
   margin: 0px;
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .traitName {
   font-weight: 400;
   margin: 0px;
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .eventContainer {
@@ -242,7 +241,7 @@
   font-size: 18px;
   line-height: 24px;
   font-weight: 600;
-  color: #191c1f;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0px;
   border-radius: 8px;
 }
