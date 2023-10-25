@@ -1,21 +1,21 @@
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/theme-monokai';
-import QueryResults from '../components/QueryResults';
-import Spinner from '../components/Spinner';
-import { NFT_COLLECTION_ADDRESS } from '../const/contractAddresses';
+import QueryResults from '@/components/QueryResults';
+import Spinner from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { CardContent, Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { NFT_COLLECTION_ADDRESS } from '@/const/contractAddresses';
 import {
   useAddress,
   useContract,
   useMintNFT,
   Web3Button,
 } from '@thirdweb-dev/react';
+import { Signer } from 'ethers';
 import React, { useState } from 'react';
 
 type ResultType = { [key: string]: string | number }; // Adjust this type based on your actual data structure
@@ -24,11 +24,16 @@ export default function Mint() {
   // Load all of the NFTs from the NFT Collection
   const { contract } = useContract(NFT_COLLECTION_ADDRESS);
   const address = useAddress() ?? '';
+  const { contract: nftCollection } = useContract(
+    process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!,
+    'nft-collection'
+  );
   const { mutateAsync: mintNft, isLoading, error } = useMintNFT(contract);
   const [results, setResults] = useState<ResultType[] | null>(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false); // Add this line
   const [sqlQuery, setSqlQuery] = useState('');
   const [title, setTitle] = useState('');
+  const [signer, setSigner] = useState<Signer | null>(null);
 
   const runQuery = async () => {
     const res = await fetch('/api/chainbase', {
@@ -37,6 +42,36 @@ export default function Mint() {
     });
     const response = await res.json();
     setResults(response.data.data.result);
+  };
+
+  //This function calls a Next JS API route that mints an NFT with signature-based minting.
+  const mintWithSignature = async () => {
+    try {
+      const signedPayloadReq = await fetch(`/api/server`, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: title,
+          authorAddress: address,
+          sql: sqlQuery,
+        }),
+      });
+
+      // Grab the JSON from the response
+      const json = await signedPayloadReq.json();
+
+      if (!signedPayloadReq.ok) {
+        alert(json.error);
+      }
+
+      // Parse the signed payload from the response and store it in a variable called signedPayload.
+      const signedPayload = json.signedPayload;
+
+      // Call signature.mint and pass in the signed payload that we received, allowing the user to mint an NFT.
+      const nft = await nftCollection?.signature.mint(signedPayload);
+      return nft;
+    } catch (e) {
+      console.error('An error occurred trying to mint the NFT:', e);
+    }
   };
 
   return (
@@ -108,22 +143,7 @@ export default function Mint() {
                 contractAddress={NFT_COLLECTION_ADDRESS}
                 {...(sqlQuery ? null : { isDisabled: true })}
                 onSuccess={(result) => alert('Created Query NFT!')}
-                action={() =>
-                  mintNft({
-                    metadata: {
-                      name: title,
-                      description: 'Chainbase SQL Query',
-                      image:
-                        'https://chainbase.com/assets/brand/Logo_Icon_Black.svg',
-                      properties: {
-                        createdByAddress: address,
-                        queryType: 'test',
-                        sql: sqlQuery,
-                      },
-                    },
-                    to: address,
-                  })
-                }
+                action={() => mintWithSignature()}
               >
                 Create SQL NFT
               </Web3Button>

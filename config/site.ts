@@ -6,12 +6,8 @@ export const siteConfig = {
     'Buy, sell, and mint SQL queries as NFTs. Data powered by Chainbase.',
   mainNav: [
     {
-      title: 'Buy',
-      href: '/buy',
-    },
-    {
-      title: 'Sell',
-      href: '/sell',
+      title: 'Market',
+      href: '/market',
     },
     {
       title: 'Mint',

@@ -11,10 +11,10 @@ export default function Buy() {
   return (
     <div className="container">
       <h1 className="text-3xl font-bold sm:text-5xl xl:text-6xl/none my-4 text-center">
-        Buy NFTs
+        Marketplace
       </h1>
       <p className="text-lg text-center pb-4 text-gray-700">
-        Browse which NFTs are available from the collection.
+        Buy, sell, and mint SQL queries as NFTs. Data powered by Chainbase.
       </p>
       <NFTGrid
         data={data}

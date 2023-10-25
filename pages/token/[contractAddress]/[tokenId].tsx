@@ -1,15 +1,11 @@
-import QueryResults from '../../../components/QueryResults';
-import Spinner from '../../../components/Spinner';
-import {
-  ETHERSCAN_URL,
-  MARKETPLACE_ADDRESS,
-  NETWORK,
-  NFT_COLLECTION_ADDRESS,
-} from '../../../const/contractAddresses';
-import randomColor from '../../../util/randomColor';
-import toastStyle from '../../../util/toastConfig';
+import QueryResults from '@/components/QueryResults';
+import SaleInfo from '@/components/SaleInfo/SaleInfo';
+import Spinner from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -19,52 +15,57 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  ETHERSCAN_URL,
+  MARKETPLACE_ADDRESS,
+  NETWORK,
+  NFT_COLLECTION_ADDRESS,
+} from '@/const/contractAddresses';
+import toastStyle from '@/util/toastConfig';
+import {
   ThirdwebNftMedia,
   useContract,
   useContractEvents,
   useValidDirectListings,
   useValidEnglishAuctions,
   Web3Button,
+  useAddress,
 } from '@thirdweb-dev/react';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
-type NFTMetadataProperties = {
-  sql?: string;
-  // include other properties as needed
+type MetadataProperties = {
+  sql: string;
+  // include other properties if needed
 };
 
-type NFTMetadata = {
-  uri: string; // Add this line
-  properties?: NFTMetadataProperties;
-  id?: string;
-  description?: string;
-  name?: string;
-  // include other properties as needed
-};
-
-type NFT = {
-  metadata?: NFTMetadata;
-  owner?: string;
-  // include other properties as needed
+type ThirdWebNFT = {
+  owner: string;
+  type: 'ERC1155' | 'ERC721' | 'metaplex';
+  supply: string;
+  metadata: {
+    properties: MetadataProperties;
+    uri: string;
+    name: string;
+    id: string;
+    // include other properties if needed
+  };
+  // include other properties if needed
 };
 
 type Props = {
-  nft: NFT;
+  nft: ThirdWebNFT;
   contractMetadata: any;
 };
 
 type ResultType = { [key: string]: string | number }; // Adjust this type based on your actual data structure
 
-const [randomColor1, randomColor2] = [randomColor(), randomColor()];
-
 export default function TokenPage({ nft, contractMetadata }: Props) {
   const [results, setResults] = useState<ResultType[] | null>(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false); // Add this line
-  // const [sqlQuery, setSqlQuery] = useState('');
+  const address = useAddress();
 
   const runQuery = async () => {
     const res = await fetch('../../api/chainbase', {
@@ -158,7 +159,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   }
 
   return (
-    <div className="container mx-auto px-64 my-8 gap-4 grid md:grid-cols-2 ">
+    <div className="container mx-auto px-32 my-8 gap-4 grid md:grid-cols-2 ">
       {/* Summary Info */}
       <div className="">
         <ThirdwebNftMedia
@@ -206,171 +207,182 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
 
-      {/* Price */}
-      <div className="flex flex-col items-center">
-        <div className="flex flex-col items-center">
-          {/* Pricing information */}
-          <div className="flex flex-col items-center">
-            <p className="text-lg font-bold">Purchase</p>
-            <div className="mt-2">
-              {loadingContract || loadingDirect || loadingAuction ? (
-                <Spinner />
-              ) : (
-                <>
-                  {directListing && directListing[0] ? (
-                    <>
-                      {directListing[0]?.currencyValuePerToken.displayValue}
-                      {' ' + directListing[0]?.currencyValuePerToken.symbol}
-                    </>
-                  ) : auctionListing && auctionListing[0] ? (
-                    <>
-                      {auctionListing[0]?.buyoutCurrencyValue.displayValue}
-                      {' ' + auctionListing[0]?.buyoutCurrencyValue.symbol}
-                    </>
-                  ) : (
-                    'Not for sale'
-                  )}
-                </>
-              )}
-            </div>
-
-            <div className="mt-2">
-              {loadingAuction ? (
-                <></>
-              ) : (
-                <>
-                  {auctionListing && auctionListing[0] && (
-                    <>
-                      <p className="mt-3 text-sm font-semibold">
-                        Bids starting from
-                      </p>
-
-                      <div className="mt-1">
-                        {
-                          auctionListing[0]?.minimumBidCurrencyValue
-                            .displayValue
-                        }
-                        {' ' +
-                          auctionListing[0]?.minimumBidCurrencyValue.symbol}
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {loadingContract || loadingDirect || loadingAuction ? (
-          <></>
-        ) : (
-          <>
-            <Web3Button
-              contractAddress={MARKETPLACE_ADDRESS}
-              action={async () => await buyListing()}
-              className="mt-4 px-4 py- rounded"
-              onSuccess={() => {
-                toast(`Purchase success!`, {
-                  icon: '✅',
-                  style: toastStyle,
-                  position: 'bottom-center',
-                });
-              }}
-              onError={(e) => {
-                toast(`Purchase failed! Reason: ${e.message}`, {
-                  icon: '❌',
-                  style: toastStyle,
-                  position: 'bottom-center',
-                });
-              }}
-            >
-              Buy at asking price
-            </Web3Button>
-
-            <div className="mt-2">
-              <p className="text-sm font-semibold">or</p>
-            </div>
-
-            <input
-              className="mt-2 px-3 py-2 border rounded"
-              defaultValue={
-                auctionListing?.[0]?.minimumBidCurrencyValue?.displayValue || 0
-              }
-              type="number"
-              step={0.000001}
-              onChange={(e) => {
-                setBidValue(e.target.value);
-              }}
-            />
-
-            <Web3Button
-              contractAddress={MARKETPLACE_ADDRESS}
-              action={async () => await createBidOrOffer()}
-              className="mt-2 px-4 py-2 rounded"
-              onSuccess={() => {
-                toast(`Bid success!`, {
-                  icon: '✅',
-                  style: toastStyle,
-                  position: 'bottom-center',
-                });
-              }}
-              onError={(e) => {
-                console.log(e);
-                toast(`Bid failed! Reason: ${e.message}`, {
-                  icon: '❌',
-                  style: toastStyle,
-                  position: 'bottom-center',
-                });
-              }}
-            >
-              Place bid
-            </Web3Button>
-          </>
-        )}
-      </div>
-
-      {/* History */}
-      <div className="md:col-span-2">
-        <h3 className="">History</h3>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Event</TableHead>
-              <TableHead>From</TableHead>
-              <TableHead>To</TableHead>
-              <TableHead>Transaction</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transferEvents?.map((event, index) => (
-              <TableRow key={event.transaction.transactionHash}>
-                <TableCell>
-                  {index === transferEvents.length - 1 ? 'Mint' : 'Transfer'}
-                </TableCell>
-                <TableCell>
-                  {event.data.from?.slice(0, 4)}...
-                  {event.data.from?.slice(-2)}
-                </TableCell>
-                <TableCell>
-                  {event.data.to?.slice(0, 4)}...
-                  {event.data.to?.slice(-2)}
-                </TableCell>
-                <TableCell>
-                  <a
-                    href={`${ETHERSCAN_URL}/tx/${event.transaction.transactionHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Transaction ↗
-                  </a>
-                </TableCell>
+        {/* History */}
+        <div className="">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">History</h3>
+          <Table className="border-2 rounded shadow-lg">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Event</TableHead>
+                <TableHead>From</TableHead>
+                <TableHead>To</TableHead>
+                <TableHead>Transaction</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {transferEvents?.map((event, index) => (
+                <TableRow key={event.transaction.transactionHash}>
+                  <TableCell>
+                    {index === transferEvents.length - 1 ? 'Mint' : 'Transfer'}
+                  </TableCell>
+                  <TableCell>
+                    {event.data.from?.slice(0, 4)}...
+                    {event.data.from?.slice(-2)}
+                  </TableCell>
+                  <TableCell>
+                    {event.data.to?.slice(0, 4)}...
+                    {event.data.to?.slice(-2)}
+                  </TableCell>
+                  <TableCell>
+                    <a
+                      href={`${ETHERSCAN_URL}/tx/${event.transaction.transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Transaction ↗
+                    </a>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
+
+      {/* Buy/Sell */}
+      {address === nft?.owner ? (
+        <div className="flex flex-col items-center">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Sell</h3>
+          <SaleInfo nft={nft} contractMetadata={contractMetadata} />
+        </div>
+      ) : (
+        <div className="flex flex-col items-center">
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle>Buy</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center">
+                <div className="mt-2">
+                  {loadingContract || loadingDirect || loadingAuction ? (
+                    <Spinner />
+                  ) : (
+                    <>
+                      {directListing && directListing[0] ? (
+                        <>
+                          {directListing[0]?.currencyValuePerToken.displayValue}
+                          {' ' + directListing[0]?.currencyValuePerToken.symbol}
+                        </>
+                      ) : auctionListing && auctionListing[0] ? (
+                        <>
+                          {auctionListing[0]?.buyoutCurrencyValue.displayValue}
+                          {' ' + auctionListing[0]?.buyoutCurrencyValue.symbol}
+                        </>
+                      ) : (
+                        'Not for sale'
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div className="mt-2">
+                  {loadingAuction ? (
+                    <></>
+                  ) : (
+                    <>
+                      {auctionListing && auctionListing[0] && (
+                        <>
+                          <p className="mt-3 text-sm font-semibold">
+                            Bids starting from
+                          </p>
+
+                          <div className="mt-1">
+                            {
+                              auctionListing[0]?.minimumBidCurrencyValue
+                                .displayValue
+                            }
+                            {' ' +
+                              auctionListing[0]?.minimumBidCurrencyValue.symbol}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {loadingContract || loadingDirect || loadingAuction ? (
+                  <></>
+                ) : (
+                  <>
+                    <Web3Button
+                      contractAddress={MARKETPLACE_ADDRESS}
+                      action={async () => await buyListing()}
+                      className="mt-4 px-4 py- rounded"
+                      onSuccess={() => {
+                        toast(`Purchase success!`, {
+                          icon: '✅',
+                          style: toastStyle,
+                          position: 'bottom-center',
+                        });
+                      }}
+                      onError={(e) => {
+                        toast(`Purchase failed! Reason: ${e.message}`, {
+                          icon: '❌',
+                          style: toastStyle,
+                          position: 'bottom-center',
+                        });
+                      }}
+                    >
+                      Buy at asking price
+                    </Web3Button>
+
+                    <div className="mt-2">
+                      <p className="text-sm font-semibold">or</p>
+                    </div>
+
+                    <input
+                      className="mt-2 px-3 py-2 border rounded"
+                      defaultValue={
+                        auctionListing?.[0]?.minimumBidCurrencyValue
+                          ?.displayValue || 0
+                      }
+                      type="number"
+                      step={0.000001}
+                      onChange={(e) => {
+                        setBidValue(e.target.value);
+                      }}
+                    />
+
+                    <Web3Button
+                      contractAddress={MARKETPLACE_ADDRESS}
+                      action={async () => await createBidOrOffer()}
+                      className="mt-2 px-4 py-2 rounded"
+                      onSuccess={() => {
+                        toast(`Bid success!`, {
+                          icon: '✅',
+                          style: toastStyle,
+                          position: 'bottom-center',
+                        });
+                      }}
+                      onError={(e) => {
+                        console.log(e);
+                        toast(`Bid failed! Reason: ${e.message}`, {
+                          icon: '❌',
+                          style: toastStyle,
+                          position: 'bottom-center',
+                        });
+                      }}
+                    >
+                      Place bid
+                    </Web3Button>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
