@@ -1,16 +1,15 @@
+import { NFT_COLLECTION_ADDRESS } from '../const/contractAddresses';
+import tokenPageStyles from '../styles/Token.module.css';
+import NFTGrid from '@/components/NFT/NFTGrid';
+import SaleInfo from '@/components/SaleInfo/SaleInfo';
 import {
   ThirdwebNftMedia,
   useAddress,
   useContract,
   useOwnedNFTs,
-} from "@thirdweb-dev/react";
-import React, { useState } from "react";
-import Container from "../components/Container/Container";
-import NFTGrid from "../components/NFT/NFTGrid";
-import { NFT_COLLECTION_ADDRESS } from "../const/contractAddresses";
-import tokenPageStyles from "../styles/Token.module.css";
-import { NFT as NFTType } from "@thirdweb-dev/sdk";
-import SaleInfo from "../components/SaleInfo/SaleInfo";
+} from '@thirdweb-dev/react';
+import { NFT as NFTType } from '@thirdweb-dev/sdk';
+import React, { useState } from 'react';
 
 export default function Sell() {
   // Load all of the NFTs from the NFT Collection
@@ -21,11 +20,15 @@ export default function Sell() {
   const [selectedNft, setSelectedNft] = useState<NFTType>();
 
   return (
-    <Container maxWidth="lg">
-      <h1>Sell NFTs</h1>
+    <div className="container">
+      <h1 className="text-3xl font-bold sm:text-5xl xl:text-6xl/none my-4 text-center">
+        Sell NFTs
+      </h1>
       {!selectedNft ? (
         <>
-          <p>Select which NFT you&rsquo;d like to sell below.</p>
+          <p className="text-lg text-center pb-4 text-gray-700">
+            Select which NFT you&rsquo;d like to sell below.
+          </p>
           <NFTGrid
             data={data}
             isLoading={isLoading}
@@ -71,6 +74,6 @@ export default function Sell() {
           </div>
         </div>
       )}
-    </Container>
+    </div>
   );
 }

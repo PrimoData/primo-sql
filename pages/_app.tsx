@@ -1,9 +1,9 @@
-import { Navbar } from '../components/Navbar/Navbar';
-// import NextNProgress from "nextjs-progressbar";
 import { NETWORK } from '../const/contractAddresses';
 import { ThirdwebProvider } from '@thirdweb-dev/react';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import '../styles/globals.css';
+import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { ThemeProvider } from '@/components/theme-provider';
 import { fontSans } from '@/lib/fonts';
@@ -15,19 +15,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
       activeChain={NETWORK}
     >
-      {/* Progress bar when navigating between pages */}
-      {/* <NextNProgress
-        color="var(--color-tertiary)"
-        startPosition={0.3}
-        stopDelayMs={200}
-        height={3}
-        showOnShallow={true}
-      /> */}
-
-      {/* Render the navigation menu above each component */}
-      {/* <Navbar /> */}
-      {/* Render the actual component (page) */}
-
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <div
           className={cn(
@@ -35,11 +22,16 @@ function MyApp({ Component, pageProps }: AppProps) {
             fontSans.variable
           )}
         >
+          <Head>
+            <title>PrimoSQL</title>
+            <link rel="icon" href="/favicon.png" />
+          </Head>
           <SiteHeader />
           <div className="flex-1">
             {' '}
             <Component {...pageProps} />
           </div>
+          <SiteFooter />
         </div>
       </ThemeProvider>
     </ThirdwebProvider>

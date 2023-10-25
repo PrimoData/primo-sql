@@ -1,9 +1,9 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: 'Next.js',
+  name: 'PrimoSQL',
   description:
-    'Beautifully designed components built with Radix UI and Tailwind CSS.',
+    'Buy, sell, and mint SQL queries as NFTs. Data powered by Chainbase.',
   mainNav: [
     {
       title: 'Buy',
@@ -19,8 +19,7 @@ export const siteConfig = {
     },
   ],
   links: {
-    twitter: 'https://twitter.com/shadcn',
-    github: 'https://github.com/shadcn/ui',
-    docs: 'https://ui.shadcn.com',
+    twitter: 'https://twitter.com/primo_data',
+    github: 'https://github.com/PrimoData/primo-sql',
   },
 };

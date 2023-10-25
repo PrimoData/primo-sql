@@ -4,21 +4,39 @@
  */
 
 import { buttonVariants } from '@/components/ui/button';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function Hero() {
   return (
-    <section className="w-full py-12 lg:py-16 ">
-      <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-          <img alt="Hero" className="lg:order-last" src="/logo.jpg" />
+    <section className="w-full pb-8 pt-0">
+      <div className="container px-8 md:px-12">
+        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-6 xl:grid-cols-[1fr_600px]">
+          {/* <img alt="Hero" className="lg:order-last" src="/logo.jpg" /> */}
+          <Image
+            alt="Hero"
+            src="/logo.jpg"
+            className="lg:order-last"
+            height={500}
+            width={500}
+          />
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Welcome to our email client
+                Web3 SQL Marketplace
               </h1>
               <p className="max-w-[600px] text-zinc-500 md:text-xl dark:text-zinc-400">
-                Manage all your emails in one place. Securely and efficiently.
+                Buy, sell, and mint SQL queries as NFTs.
+              </p>
+              <p className=" text-zinc-500 dark:text-zinc-400 inline-flex items-center">
+                Powered by:{' '}
+                <Image
+                  height={25}
+                  width={125}
+                  src="/Logo_Black_256.png"
+                  alt="Chainbase"
+                  className="inline-block"
+                />{' '}
               </p>
             </div>
             <div className="flex gap-4">
