@@ -1,38 +1,28 @@
+import ListingWrapper from '../../components/ListingWrapper/ListingWrapper';
+import NFTGrid from '../../components/NFT/NFTGrid';
+import {
+  MARKETPLACE_ADDRESS,
+  NFT_COLLECTION_ADDRESS,
+} from '../../const/contractAddresses';
+import styles from '../../styles/Profile.module.css';
 import {
   useContract,
   useOwnedNFTs,
   useValidDirectListings,
   useValidEnglishAuctions,
-} from "@thirdweb-dev/react";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import Container from "../../components/Container/Container";
-import ListingWrapper from "../../components/ListingWrapper/ListingWrapper";
-import NFTGrid from "../../components/NFT/NFTGrid";
-import Skeleton from "../../components/Skeleton/Skeleton";
-import {
-  MARKETPLACE_ADDRESS,
-  NFT_COLLECTION_ADDRESS,
-} from "../../const/contractAddresses";
-import styles from "../../styles/Profile.module.css";
-import randomColor from "../../util/randomColor";
-
-const [randomColor1, randomColor2, randomColor3, randomColor4] = [
-  randomColor(),
-  randomColor(),
-  randomColor(),
-  randomColor(),
-];
+} from '@thirdweb-dev/react';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [tab, setTab] = useState<"nfts" | "listings" | "auctions">("nfts");
+  const [tab, setTab] = useState<'nfts' | 'listings' | 'auctions'>('nfts');
 
   const { contract: nftCollection } = useContract(NFT_COLLECTION_ADDRESS);
 
   const { contract: marketplace } = useContract(
     MARKETPLACE_ADDRESS,
-    "marketplace-v3"
+    'marketplace-v3'
   );
 
   const { data: ownedNfts, isLoading: loadingOwnedNfts } = useOwnedNFTs(
@@ -51,50 +41,26 @@ export default function ProfilePage() {
     });
 
   return (
-    <Container maxWidth="lg">
-      <div className={styles.profileHeader}>
-        <div
-          className={styles.coverImage}
-          style={{
-            background: `linear-gradient(90deg, ${randomColor1}, ${randomColor2})`,
-          }}
-        />
-        <div
-          className={styles.profilePicture}
-          style={{
-            background: `linear-gradient(90deg, ${randomColor3}, ${randomColor4})`,
-          }}
-        />
-        <h1 className={styles.profileName}>
-          {router.query.address ? (
-            router.query.address.toString().substring(0, 4) +
-            "..." +
-            router.query.address.toString().substring(38, 42)
-          ) : (
-            <Skeleton width="320" />
-          )}
-        </h1>
-      </div>
-
+    <div className="container mx-8 mb-16">
       <div className={styles.tabs}>
         <h3
           className={`${styles.tab} 
-        ${tab === "nfts" ? styles.activeTab : ""}`}
-          onClick={() => setTab("nfts")}
+        ${tab === 'nfts' ? styles.activeTab : ''}`}
+          onClick={() => setTab('nfts')}
         >
-          NFTs
+          My NFTs
         </h3>
         <h3
           className={`${styles.tab} 
-        ${tab === "listings" ? styles.activeTab : ""}`}
-          onClick={() => setTab("listings")}
+        ${tab === 'listings' ? styles.activeTab : ''}`}
+          onClick={() => setTab('listings')}
         >
           Listings
         </h3>
         <h3
           className={`${styles.tab}
-        ${tab === "auctions" ? styles.activeTab : ""}`}
-          onClick={() => setTab("auctions")}
+        ${tab === 'auctions' ? styles.activeTab : ''}`}
+          onClick={() => setTab('auctions')}
         >
           Auctions
         </h3>
@@ -102,7 +68,7 @@ export default function ProfilePage() {
 
       <div
         className={`${
-          tab === "nfts" ? styles.activeTabContent : styles.tabContent
+          tab === 'nfts' ? styles.activeTabContent : styles.tabContent
         }`}
       >
         <NFTGrid
@@ -114,7 +80,7 @@ export default function ProfilePage() {
 
       <div
         className={`${
-          tab === "listings" ? styles.activeTabContent : styles.tabContent
+          tab === 'listings' ? styles.activeTabContent : styles.tabContent
         }`}
       >
         {loadingDirects ? (
@@ -130,7 +96,7 @@ export default function ProfilePage() {
 
       <div
         className={`${
-          tab === "auctions" ? styles.activeTabContent : styles.tabContent
+          tab === 'auctions' ? styles.activeTabContent : styles.tabContent
         }`}
       >
         {loadingAuctions ? (
@@ -143,6 +109,6 @@ export default function ProfilePage() {
           ))
         )}
       </div>
-    </Container>
+    </div>
   );
 }

@@ -3,26 +3,26 @@
  * @see https://v0.dev/t/nQlIUCX
  */
 
-import { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { LucideDollarSign, PlusCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export function Hero() {
   return (
-    <section className="w-full pb-8 pt-0">
+    <section className="w-full pb-8 pt-0 bg-primary">
       <div className="container px-8 md:px-12">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-6 xl:grid-cols-[1fr_600px]">
-          {/* <img alt="Hero" className="lg:order-last" src="/logo.jpg" /> */}
           <Image
             alt="Hero"
-            src="/logo.jpg"
+            src="/logo_v3.png"
             className="lg:order-last"
             height={500}
             width={500}
           />
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+              <h1 className="text-3xl text-dark-blue font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                 Web3 SQL Marketplace
               </h1>
               <p className="max-w-[600px] text-zinc-500 md:text-xl dark:text-zinc-400">
@@ -40,15 +40,18 @@ export function Hero() {
               </p>
             </div>
             <div className="flex gap-4">
-              <Link href="/buy" className={buttonVariants()}>
-                Buy
-              </Link>
-              <Link
-                href="/sell"
-                className={buttonVariants({ variant: 'outline' })}
-              >
-                Sell
-              </Link>
+              <Button asChild className="bg-secondary p-4">
+                <Link href="/market">
+                  <LucideDollarSign className="mr-2 h-4 w-4" />
+                  Market
+                </Link>
+              </Button>
+              <Button asChild className="bg-white text-black p-4">
+                <Link href="/mint">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Mint
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

@@ -9,39 +9,31 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NFT_COLLECTION_ADDRESS } from '@/const/contractAddresses';
-import {
-  useAddress,
-  useContract,
-  useMintNFT,
-  Web3Button,
-} from '@thirdweb-dev/react';
-import { Signer } from 'ethers';
+import { useAddress, useContract, Web3Button } from '@thirdweb-dev/react';
 import React, { useState } from 'react';
 
 type ResultType = { [key: string]: string | number }; // Adjust this type based on your actual data structure
 
 export default function Mint() {
-  // Load all of the NFTs from the NFT Collection
-  const { contract } = useContract(NFT_COLLECTION_ADDRESS);
   const address = useAddress() ?? '';
   const { contract: nftCollection } = useContract(
     process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!,
     'nft-collection'
   );
-  const { mutateAsync: mintNft, isLoading, error } = useMintNFT(contract);
   const [results, setResults] = useState<ResultType[] | null>(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false); // Add this line
   const [sqlQuery, setSqlQuery] = useState('');
   const [title, setTitle] = useState('');
-  const [signer, setSigner] = useState<Signer | null>(null);
 
   const runQuery = async () => {
+    setIsLoadingResults(true);
     const res = await fetch('/api/chainbase', {
       method: 'POST',
       body: JSON.stringify(sqlQuery),
     });
     const response = await res.json();
     setResults(response.data.data.result);
+    setIsLoadingResults(false);
   };
 
   //This function calls a Next JS API route that mints an NFT with signature-based minting.
@@ -76,7 +68,7 @@ export default function Mint() {
 
   return (
     <>
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen md:mx-0 mx-4">
         <Card>
           <CardContent>
             <div className="space-y-8">
@@ -116,14 +108,14 @@ export default function Mint() {
                 <DialogTrigger asChild>
                   <Button
                     onClick={runQuery}
-                    className="px-4 pb-2 mr-2 mb-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="px-4 pb-2 mr-2 mb-4 bg-secondary"
                   >
                     Preview Data
                   </Button>
                 </DialogTrigger>
                 <DialogContent
                   className="w-full max-w-3xl overflow-y-auto py-4 my-8"
-                  style={{ maxHeight: '80vh' }}
+                  style={{ maxHeight: '80vh', minHeight: '40vh' }}
                 >
                   {isLoadingResults ? (
                     <Spinner />
@@ -137,9 +129,6 @@ export default function Mint() {
                 connectWallet={{
                   btnTitle: 'Create Query NFT',
                 }}
-                className={
-                  'bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 mb-4'
-                }
                 contractAddress={NFT_COLLECTION_ADDRESS}
                 {...(sqlQuery ? null : { isDisabled: true })}
                 onSuccess={(result) => alert('Created Query NFT!')}

@@ -9,7 +9,7 @@ export default function Buy() {
   const { data, isLoading } = useNFTs(contract);
 
   return (
-    <div className="container">
+    <div className="container mt-8 mb-16">
       <h1 className="text-3xl font-bold sm:text-5xl xl:text-6xl/none my-4 text-center">
         Marketplace
       </h1>

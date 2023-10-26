@@ -6,12 +6,12 @@ import { Icons } from '@/components/icons';
 
 export function Features() {
   return (
-    <section className="w-full py-6 md:py-12 lg:py-16 xl:py-24 bg-black">
+    <section className="w-full py-6 md:py-12 lg:py-16 xl:py-24 bg-secondary">
       <div className="container px-4 md:px-6">
         <div className="grid gap-6 items-center">
           <div className="flex flex-col justify-center space-y-8 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none bg-clip-text text-white">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none bg-clip-text text-dark-blue">
                 Features
               </h1>
               <p className="max-w-[600px] text-zinc-200 md:text-xl dark:text-zinc-100 mx-auto">
@@ -19,7 +19,8 @@ export function Features() {
               </p>
             </div>
             <div className="w-full max-w-full space-y-4 mx-auto">
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                {' '}
                 <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
                   <div className="p-2 bg-black bg-opacity-50 rounded-full">
                     <Icons.shield className="h-10 w-10 text-white" />

@@ -13,7 +13,6 @@ type Props = {
 export default function NFTGrid({
   isLoading,
   data,
-  overrideOnclickBehavior,
   emptyText = 'No NFTs found for this collection.',
 }: Props) {
   return (

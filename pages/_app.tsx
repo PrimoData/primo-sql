@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/site-header';
 import { ThemeProvider } from '@/components/theme-provider';
 import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
+import { Analytics } from '@vercel/analytics/react';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </div>
           <SiteFooter />
+          <Analytics />
         </div>
       </ThemeProvider>
     </ThirdwebProvider>

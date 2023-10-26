@@ -1,11 +1,10 @@
 import QueryResults from '@/components/QueryResults';
 import SaleInfo from '@/components/SaleInfo/SaleInfo';
 import Spinner from '@/components/Spinner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -31,6 +30,9 @@ import {
   useAddress,
 } from '@thirdweb-dev/react';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
+import { Database } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -38,7 +40,6 @@ import toast from 'react-hot-toast';
 
 type MetadataProperties = {
   sql: string;
-  // include other properties if needed
 };
 
 type ThirdWebNFT = {
@@ -50,9 +51,7 @@ type ThirdWebNFT = {
     uri: string;
     name: string;
     id: string;
-    // include other properties if needed
   };
-  // include other properties if needed
 };
 
 type Props = {
@@ -68,12 +67,14 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   const address = useAddress();
 
   const runQuery = async () => {
+    setIsLoadingResults(true);
     const res = await fetch('../../api/chainbase', {
       method: 'POST',
       body: JSON.stringify(nft?.metadata?.properties?.sql),
     });
     const response = await res.json();
     setResults(response.data.data.result);
+    setIsLoadingResults(false);
   };
 
   const [bidValue, setBidValue] = useState<string>();
@@ -159,7 +160,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   }
 
   return (
-    <div className="container mx-auto px-32 my-8 gap-4 grid md:grid-cols-2 ">
+    <div className="container mx-auto md:px-32 mb-16 mt-8 gap-4 grid md:grid-cols-2 ">
       {/* Summary Info */}
       <div className="">
         <ThirdwebNftMedia
@@ -190,8 +191,9 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
             <DialogTrigger asChild>
               <Button
                 onClick={runQuery}
-                className="px-4 py-2 my-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-4 py-2 my-4 bg-secondary"
               >
+                <Database className="mr-2 h-4 w-4" />
                 Preview Data
               </Button>
             </DialogTrigger>
@@ -210,6 +212,19 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
 
         {/* History */}
         <div className="">
+          <div className="mb-4">
+            {address === nft?.owner ? (
+              <Alert>
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>SQL Query</AlertTitle>
+                <AlertDescription>
+                  {nft?.metadata?.properties?.sql}
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <></>
+            )}
+          </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">History</h3>
           <Table className="border-2 rounded shadow-lg">
             <TableHeader>
@@ -258,12 +273,11 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
         </div>
       ) : (
         <div className="flex flex-col items-center">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Buy</h3>
+
           <Card className="w-[350px]">
-            <CardHeader>
-              <CardTitle>Buy</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center">
+            <CardContent className="mt-4">
+              <div className="flex flex-col">
                 <div className="mt-2">
                   {loadingContract || loadingDirect || loadingAuction ? (
                     <Spinner />
@@ -280,7 +294,10 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                           {' ' + auctionListing[0]?.buyoutCurrencyValue.symbol}
                         </>
                       ) : (
-                        'Not for sale'
+                        <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertTitle>Not for sale</AlertTitle>
+                        </Alert>
                       )}
                     </>
                   )}

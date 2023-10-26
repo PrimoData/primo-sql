@@ -150,10 +150,7 @@ export default function SaleInfo({ nft }: Props) {
         </TabsList>
         <TabsContent value="direct">
           <Card>
-            <CardHeader>
-              <CardTitle>Direct</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 mt-4">
               <div>
                 <h4 className="text-lg font-semibold mt-2">When</h4>
 
@@ -194,6 +191,7 @@ export default function SaleInfo({ nft }: Props) {
                   action={async () => {
                     await handleSubmitDirect(handleSubmissionDirect)();
                   }}
+                  className={'bg-secondary'}
                   onError={(error) => {
                     toast(`Listed Failed! Reason: ${error.cause}`, {
                       icon: '❌',
@@ -220,10 +218,7 @@ export default function SaleInfo({ nft }: Props) {
         </TabsContent>
         <TabsContent value="auction">
           <Card>
-            <CardHeader>
-              <CardTitle>Auction</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 mt-4">
               {/* Auction listing fields */}
               <div>
                 <h4 className="text-lg font-semibold">When </h4>
@@ -274,6 +269,7 @@ export default function SaleInfo({ nft }: Props) {
                   action={async () => {
                     return await handleSubmitAuction(handleSubmissionAuction)();
                   }}
+                  className={'bg-secondary'}
                   onError={(error) => {
                     toast(`Listed Failed! Reason: ${error.cause}`, {
                       icon: '❌',

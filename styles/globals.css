@@ -79,3 +79,11 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 }
+
+.text-dark-blue {
+  color: #011a42;
+}
+
+.bg-dark-blue {
+  background-color: #011a42;
+}
