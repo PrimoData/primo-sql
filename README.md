@@ -3,7 +3,7 @@
 Marketplace to create, sell, and buy blockchain data SQL queries, powered by Chainbase.
 
 - [Live App](https://primo-sql.vercel.app/)
-- [Video Demo]()
+- [Video Demo](https://youtu.be/JNm-zLGqZOg)
 
 _Note: This project was completed as part of the [Chainbase x DeveloperDAO Hackathon](https://twitter.com/developer_dao/status/1713991958249550271) in October 2023._
 
